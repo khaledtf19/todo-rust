@@ -7,7 +7,7 @@ use std::env;
 
 mod args;
 
-use args::{CreateCommand, DeleteCommand, EntryType, MyArgs};
+use args::{CreateCommand, DeleteCommand, EntryType,  MyArgs, DoneIdCommand,DoneNameCommand, DoneType, DoneCommand};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -21,6 +21,18 @@ async fn main() -> Result<()> {
     let args = MyArgs::parse();
     match args.entry {
         EntryType::Create(CreateCommand { text }) => {}
+        EntryType::Done(done) => {
+            match done.done {
+                DoneType::Id(DoneIdCommand {id}) => {
+                    println!("id: {:?}", id);
+                }
+                DoneType::Name(DoneNameCommand{name})=> {
+                    println!("name: {:?}", name);
+                }
+            }
+            // println!("id: {:?}", s);
+        }
+
     }
 
     Ok(())
