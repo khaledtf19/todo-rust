@@ -3,9 +3,9 @@ use clap::Parser;
 extern crate dotenv;
 use dotenv::dotenv;
 use sqlx::Row;
-use std::env;
 
 mod args;
+mod crud_todo;
 
 use args::{CreateCommand, DeleteCommand, EntryType,  MyArgs, DoneIdCommand,DoneNameCommand, DoneType, DoneCommand};
 
@@ -20,7 +20,11 @@ async fn main() -> Result<()> {
 
     let args = MyArgs::parse();
     match args.entry {
-        EntryType::Create(CreateCommand { text }) => {}
+        EntryType::Create(CreateCommand { name,discription }) => {
+            sqlx::query("INSERT INTO todos (name, discription) VALUES ($1, $2)").bind(&name).bind(&discription).execute(&pool).await?;
+            println!("{}, {}", name,discription);
+            
+        }
         EntryType::Done(done) => {
             match done.done {
                 DoneType::Id(DoneIdCommand {id}) => {
@@ -30,7 +34,6 @@ async fn main() -> Result<()> {
                     println!("name: {:?}", name);
                 }
             }
-            // println!("id: {:?}", s);
         }
 
     }

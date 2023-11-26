@@ -9,24 +9,25 @@ pub struct MyArgs {
 #[derive(Debug, Subcommand)]
 pub enum EntryType {
     Create(CreateCommand),
-    Done(DoneCommand)
+    Done(DoneCommand),
 }
 
 #[derive(Debug, Args)]
 pub struct DoneCommand {
     #[clap(subcommand)]
-    pub done: DoneType 
+    pub done: DoneType,
 }
 
 #[derive(Debug, Subcommand)]
 pub enum DoneType {
     Id(DoneIdCommand),
-    Name(DoneNameCommand)
+    Name(DoneNameCommand),
 }
 
 #[derive(Debug, Args)]
 pub struct CreateCommand {
-    pub text: String,
+    pub name: String,
+    pub discription: String,
 }
 
 #[derive(Debug, Args)]
