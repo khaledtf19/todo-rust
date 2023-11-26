@@ -4,5 +4,6 @@ use sqlx::FromRow;
 pub struct Todo {
     pub id: i32,
     pub name: String,
-    pub discription: String
+    pub discription: String,
+    pub done: bool
 }
