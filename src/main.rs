@@ -1,13 +1,14 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 use clap::Parser;
 extern crate dotenv;
 use dotenv::dotenv;
-use sqlx::Row;
 
 mod args;
 mod crud_todo;
+mod structs;
 
-use args::{CreateCommand, DeleteCommand, EntryType,  MyArgs, DoneIdCommand,DoneNameCommand, DoneType, DoneCommand};
+use args::{CreateCommand, DeleteCommand, EntryType,  MyArgs};
+use crud_todo::{create_todo, done_todo};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -19,21 +20,14 @@ async fn main() -> Result<()> {
     sqlx::migrate!("./migrations").run(&pool).await?;
 
     let args = MyArgs::parse();
+
     match args.entry {
         EntryType::Create(CreateCommand { name,discription }) => {
-            sqlx::query("INSERT INTO todos (name, discription) VALUES ($1, $2)").bind(&name).bind(&discription).execute(&pool).await?;
-            println!("{}, {}", name,discription);
-            
+            create_todo(name, discription, &pool).await?;
         }
         EntryType::Done(done) => {
-            match done.done {
-                DoneType::Id(DoneIdCommand {id}) => {
-                    println!("id: {:?}", id);
-                }
-                DoneType::Name(DoneNameCommand{name})=> {
-                    println!("name: {:?}", name);
-                }
-            }
+            
+            done_todo(done, &pool).await?;
         }
 
     }
