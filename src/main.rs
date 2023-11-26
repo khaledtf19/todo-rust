@@ -16,6 +16,8 @@ async fn main() -> Result<()> {
     let url = dotenv::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let pool = sqlx::postgres::PgPool::connect(&url).await?;
 
+    sqlx::migrate!("./migrations").run(&pool).await?;
+
     let args = MyArgs::parse();
     match args.entry {
         EntryType::Create(CreateCommand { text }) => {}
