@@ -8,7 +8,7 @@ mod crud_todo;
 mod structs;
 
 use args::{CreateCommand, DeleteCommand, EntryType,  MyArgs};
-use crud_todo::{create_todo, done_todo};
+use crud_todo::{create_todo, done_todo, delete_todo_by_id};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -26,8 +26,10 @@ async fn main() -> Result<()> {
             create_todo(name, discription, &pool).await?;
         }
         EntryType::Done(done) => {
-            
             done_todo(done, &pool).await?;
+        }
+        EntryType::Delete(DeleteCommand { id }) => {
+            delete_todo_by_id(id, &pool).await?;
         }
 
     }

@@ -1,5 +1,5 @@
 use anyhow::Ok;
-use anyhow::{Result, Context};
+use anyhow::Result;
 use sqlx::PgPool;
 
 use crate::args::{DoneCommand, DoneIdCommand, DoneNameCommand, DoneType};
@@ -35,7 +35,11 @@ pub async fn search_todo_by_id(id: &i32, pool: &PgPool) -> Result<()> {
     let q = "SELECT * FROM todos WHERE id = $1;";
     let query = sqlx::query_as::<_, Todo>(q).bind(id);
     let todo = query.fetch_optional(pool).await?;
-    println!("{:?}", todo);
+    match todo {
+        Some(todo) => println!("{:?}", todo),
+        None => println!("failed to find todo with id: {}", id),
+    }
+
     Ok(())
 }
 
@@ -50,8 +54,20 @@ pub async fn search_todo_by_name(name: &str, pool: &PgPool, many: bool) -> Resul
     let query = sqlx::query_as::<_, Todo>(q).bind(name);
     let todo = query.fetch_optional(pool).await?;
     match todo {
-        Some(todo) => println!("{:?}",todo),
+        Some(todo) => println!("{:?}", todo),
         None => println!("failed to find todo with name: {}", name),
     }
     Ok(())
+}
+
+pub async fn delete_todo_by_id(id: i32, pool: &PgPool) -> Result<()> {
+    let query = "DELETE FROM todos WHERE id = $1;";
+    sqlx::query(query).bind(id).execute(pool).await?;
+    println!("todo with id {} has been deleted", id);
+
+    Ok(())
+}
+
+pub fn print_table(){
+
 }

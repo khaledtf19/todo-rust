@@ -10,6 +10,7 @@ pub struct MyArgs {
 pub enum EntryType {
     Create(CreateCommand),
     Done(DoneCommand),
+    Delete(DeleteCommand)
 }
 
 #[derive(Debug, Args)]
