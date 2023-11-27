@@ -16,3 +16,6 @@
 ## COMMANDS
 ### CREATE GET DONE DELETE
 - Create new todo task `cargo run create <task name> "<task discription>"`
+- Get all todos `cargo run get`
+- Mark task as done with task name `cargo run done name <task name> `
+- Mark task as done with task id `cargo run done id <task id: number>`

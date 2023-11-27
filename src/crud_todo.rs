@@ -14,7 +14,7 @@ pub async fn get_all_todos(pool: &PgPool)-> Result<()> {
 }
 
 pub async fn create_todo(name: String, discription: String, pool: &PgPool) -> Result<()> {
-    sqlx::query("INSERT INTO todos (name, discription) VALUES ($1, $2)")
+    sqlx::query("INSERT INTO todos (name, discription) VALUES ($1, $2);")
         .bind(&name)
         .bind(&discription)
         .execute(pool)
@@ -31,7 +31,7 @@ pub async fn done_todo(done: DoneCommand, pool: &PgPool) -> Result<()> {
             search_todo_by_id(&id, &pool).await?;
         }
         DoneType::Name(DoneNameCommand { name }) => {
-            let q = "Update todos SET done = NOT done WHERE name = $1";
+            let q = "Update todos SET done = NOT done WHERE name = $1;";
             sqlx::query(q).bind(&name).execute(pool).await?;
             search_todo_by_name(&name, &pool, false).await?;
         }

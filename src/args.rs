@@ -14,8 +14,6 @@ pub enum EntryType {
     Get
 }
 
-
-
 #[derive(Debug, Args)]
 pub struct DoneCommand {
     #[clap(subcommand)]
