@@ -1,15 +1,18 @@
 use anyhow::Ok;
 use anyhow::Result;
 use sqlx::PgPool;
-use tabled::{Table, settings::Style};
+use tabled::{
+    settings::{format::Format, object::Rows, Color, Modify, Style},
+    Table,
+};
 
 use crate::args::{DoneCommand, DoneIdCommand, DoneNameCommand, DoneType};
 use crate::structs::Todo;
 
-pub async fn get_all_todos(pool: &PgPool)-> Result<()> {
+pub async fn get_all_todos(pool: &PgPool, new: bool) -> Result<()> {
     let q = "SELECT * FROM todos;";
-    let todos = sqlx::query_as::<_,Todo>(q).fetch_all(pool).await?;
-    print_table(&todos);
+    let todos = sqlx::query_as::<_, Todo>(q).fetch_all(pool).await?;
+    print_table(&todos, new);
     Ok(())
 }
 
@@ -19,7 +22,7 @@ pub async fn create_todo(name: String, discription: String, pool: &PgPool) -> Re
         .bind(&discription)
         .execute(pool)
         .await?;
-    get_all_todos(pool).await?;
+    get_all_todos(pool, true).await?;
     Ok(())
 }
 
@@ -44,7 +47,7 @@ pub async fn search_todo_by_id(id: &i32, pool: &PgPool) -> Result<()> {
     let query = sqlx::query_as::<_, Todo>(q).bind(id);
     let todo = query.fetch_optional(pool).await?;
     match todo {
-        Some(todo) => print_table(&vec![todo]),
+        Some(todo) => print_table(&vec![todo], false),
         None => println!("failed to find todo with id: {}", id),
     }
 
@@ -56,13 +59,13 @@ pub async fn search_todo_by_name(name: &str, pool: &PgPool, many: bool) -> Resul
     if many {
         let query = sqlx::query_as::<_, Todo>(q).bind(name.to_string() + "%");
         let todos = query.fetch_all(pool).await?;
-        print_table(&todos);
+        print_table(&todos, false);
         return Ok(());
     }
     let query = sqlx::query_as::<_, Todo>(q).bind(name);
     let todo = query.fetch_optional(pool).await?;
     match todo {
-        Some(todo) => print_table(&vec![todo]),
+        Some(todo) => print_table(&vec![todo], false),
         None => println!("failed to find todo with name: {}", name),
     }
     Ok(())
@@ -73,11 +76,16 @@ pub async fn delete_todo_by_id(id: i32, pool: &PgPool) -> Result<()> {
     sqlx::query(query).bind(id).execute(pool).await?;
 
     println!("todo with id {} has been deleted ", id);
-    get_all_todos(pool).await?;
+    get_all_todos(pool, false).await?;
     Ok(())
 }
 
-pub fn print_table(todos: &Vec<Todo>) {
-    let table = Table::new(todos).with(Style::modern()).to_string();
+pub fn print_table(todos: &Vec<Todo>, new: bool) {
+    let mut table = Table::new(todos);
+    if new {
+        table.with(Modify::new(Rows::last()).with(Color::FG_BLUE));
+    }
+    table.with(Style::modern()).with(Color::FG_GREEN);
+               
     println!("{}", table);
 }

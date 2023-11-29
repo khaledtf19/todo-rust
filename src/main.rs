@@ -32,7 +32,7 @@ async fn main() -> Result<()> {
             delete_todo_by_id(id, &pool).await?;
         }
         EntryType::Get => {
-            get_all_todos(&pool).await?;
+            get_all_todos(&pool, false).await?;
         }
     }
 
