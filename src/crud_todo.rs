@@ -2,7 +2,7 @@ use anyhow::Ok;
 use anyhow::Result;
 use sqlx::PgPool;
 use tabled::{
-    settings::{format::Format, object::Rows, Color, Modify, Style},
+    settings::{ object::Rows, Color, Modify, Style},
     Table,
 };
 
